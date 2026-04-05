@@ -1,0 +1,2260 @@
+{
+  "info": {
+    "_postman_id": "de5a74a3-f593-464e-8a9a-906ba06d9e42",
+    "name": "PetStore",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21164763",
+    "_collection_link": "https://go.postman.co/collection/21164763-de5a74a3-f593-464e-8a9a-906ba06d9e42?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "USER",
+      "item": [
+        {
+          "name": "Create user",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "let userId = Math.floor((Math.random()*100 +1));\r",
+                  "\r",
+                  "let userEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+                  "\r",
+                  "function makeName() {\r",
+                  "  let text = \"\";\r",
+                  "  let possible = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\";\r",
+                  "\r",
+                  "  for (var i = 0; i < 5; i++)\r",
+                  "    text += possible.charAt(Math.floor(Math.random() * possible.length));\r",
+                  "\r",
+                  "  return text;\r",
+                  "}\r",
+                  "\r",
+                  "pm.environment.set(\"userId\", userId);\r",
+                  "pm.environment.set(\"userEmail\", userEmail)\r",
+                  "pm.environment.set(\"userName\", makeName());\r",
+                  "\r",
+                  "console.log(userId)\r",
+                  "console.log(userEmail)\r",
+                  "console.log(pm.environment.get(\"userName\"));\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check code value\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.code).to.eql(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 200ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{userId}},\n  \"username\": \"{{userName}}\",\n  \"firstName\": \"firstName\",\n  \"lastName\": \"{{$randomLastName}}\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\",\n  \"phone\": \"1515115\",\n  \"userStatus\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "description": "This can only be done by the logged in user."
+          },
+          "response": [
+            {
+              "name": "successful operation",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": -40703415,\n  \"username\": \"consec\",\n  \"firstName\": \"pariatur in\",\n  \"lastName\": \"magna Excepteur\",\n  \"email\": \"tempor esse minim eu veniam\",\n  \"password\": \"minim\",\n  \"phone\": \"ut consequat\",\n  \"userStatus\": 58297958\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get user by user name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 200ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+                  "});\r",
+                  "\r",
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"User email matches\", function () {    \r",
+                  "    pm.expect(jsonData.email).to.include(pm.environment.get(\"userEmail\"))\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"User id matches\", function () {\r",
+                  "    pm.expect(jsonData.id).to.eql(pm.environment.get(\"userId\"));\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userName}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "successful operation",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/user/:username",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    ":username"
+                  ],
+                  "variable": [
+                    {
+                      "key": "username",
+                      "value": "et cillum incididunt non",
+                      "description": "(Required) The name that needs to be fetched. Use user1 for testing. "
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": -40703415,\n  \"username\": \"consec\",\n  \"firstName\": \"pariatur in\",\n  \"lastName\": \"magna Excepteur\",\n  \"email\": \"tempor esse minim eu veniam\",\n  \"password\": \"minim\",\n  \"phone\": \"ut consequat\",\n  \"userStatus\": 58297958\n}"
+            },
+            {
+              "name": "Invalid username supplied",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/user/:username",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    ":username"
+                  ],
+                  "variable": [
+                    {
+                      "key": "username",
+                      "value": "et cillum incididunt non",
+                      "description": "(Required) The name that needs to be fetched. Use user1 for testing. "
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "User not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/user/:username",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    ":username"
+                  ],
+                  "variable": [
+                    {
+                      "key": "username",
+                      "value": "et cillum incididunt non",
+                      "description": "(Required) The name that needs to be fetched. Use user1 for testing. "
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Updated user",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "let userId = Math.floor((Math.random()*100 +1));\r",
+                  "\r",
+                  "let userEmail = pm.variables.replaceIn('{{$randomEmail}}');\r",
+                  "\r",
+                  "function makeName() {\r",
+                  "  let text = \"\";\r",
+                  "  let possible = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\";\r",
+                  "\r",
+                  "  for (var i = 0; i < 5; i++)\r",
+                  "    text += possible.charAt(Math.floor(Math.random() * possible.length));\r",
+                  "\r",
+                  "  return text;\r",
+                  "}\r",
+                  "\r",
+                  "pm.environment.set(\"userId\", userId);\r",
+                  "pm.environment.set(\"userEmail\", userEmail)\r",
+                  "pm.environment.set(\"userName\", makeName());\r",
+                  "\r",
+                  "console.log(userId)\r",
+                  "console.log(userEmail)\r",
+                  "console.log(pm.environment.get(\"userName\"));\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{userId}},\n  \"username\": \"{{userName}}\",\n  \"firstName\": \"firstName\",\n  \"lastName\": \"{{$randomLastName}}\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{password}}\",\n  \"phone\": \"1515115\",\n  \"userStatus\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/:username",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":username"
+              ],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "{{userName}}",
+                  "description": "(Required) name that need to be updated"
+                }
+              ]
+            },
+            "description": "This can only be done by the logged in user."
+          },
+          "response": [
+            {
+              "name": "Invalid user supplied",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": -40703415,\n  \"username\": \"consec\",\n  \"firstName\": \"pariatur in\",\n  \"lastName\": \"magna Excepteur\",\n  \"email\": \"tempor esse minim eu veniam\",\n  \"password\": \"minim\",\n  \"phone\": \"ut consequat\",\n  \"userStatus\": 58297958\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/:username",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    ":username"
+                  ],
+                  "variable": [
+                    {
+                      "key": "username",
+                      "value": "et cillum incididunt non",
+                      "description": "(Required) name that need to be updated"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "User not found",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": -40703415,\n  \"username\": \"consec\",\n  \"firstName\": \"pariatur in\",\n  \"lastName\": \"magna Excepteur\",\n  \"email\": \"tempor esse minim eu veniam\",\n  \"password\": \"minim\",\n  \"phone\": \"ut consequat\",\n  \"userStatus\": 58297958\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/:username",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    ":username"
+                  ],
+                  "variable": [
+                    {
+                      "key": "username",
+                      "value": "et cillum incididunt non",
+                      "description": "(Required) name that need to be updated"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get updated username",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 200ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "",
+                  "pm.test(\"User email matches\", function () {    ",
+                  "    pm.expect(jsonData.email).to.include(pm.environment.get(\"userEmail\"))",
+                  "});",
+                  "",
+                  "pm.test(\"User id matches\", function () {",
+                  "    pm.expect(jsonData.id).to.eql(pm.environment.get(\"userId\"));",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userName}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userName}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get deleted username",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 200ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "",
+                  "pm.test(\"Check type which include er\", function () {    ",
+                  "    pm.expect(jsonData.type).to.include(\"er\")",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userName}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userName}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PET",
+      "item": [
+        {
+          "name": "Example 1",
+          "item": [
+            {
+              "name": "Add a new pet to the store",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "let jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.environment.set(\"petId\", jsonData.id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"id\": {{$randomInt}},\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pet",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Invalid input",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet"
+                      ]
+                    }
+                  },
+                  "status": "Method Not Allowed",
+                  "code": 405,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                },
+                {
+                  "name": "Add a new pet to the store",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"id\": 245245,\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/pet",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Date",
+                      "value": "Thu, 28 Jul 2022 13:17:58 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, DELETE, PUT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, api_key, Authorization"
+                    },
+                    {
+                      "key": "Server",
+                      "value": "Jetty(9.2.9.v20150224)"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"id\": 245245,\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Add a new pet with local UUID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "let jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.environment.set(\"petId\", jsonData.id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"id\": {{$randomInt}},\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pet",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Invalid input",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet"
+                      ]
+                    }
+                  },
+                  "status": "Method Not Allowed",
+                  "code": 405,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                },
+                {
+                  "name": "Add a new pet to the store",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"id\": 245245,\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/pet",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Date",
+                      "value": "Thu, 28 Jul 2022 13:17:58 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, DELETE, PUT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, api_key, Authorization"
+                    },
+                    {
+                      "key": "Server",
+                      "value": "Jetty(9.2.9.v20150224)"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"id\": 245245,\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Finds Pets by status",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "/*let jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"All status=sold\", function () {    \r",
+                      "    for (var i = 0; i < jsonData.length; i++) {\r",
+                      "        pm.expect(jsonData[i].status).to.eql(\"sold\")\r",
+                      "    }\r",
+                      "});\r",
+                      "\r",
+                      "\r",
+                      "let findById = jsonData.filter(x => x.id === pm.environment.get(\"petId\"));\r",
+                      "let checkEmpty = (_.isEmpty(findById));\r",
+                      "\r",
+                      "\r",
+                      "if \t(checkEmpty){\r",
+                      "   postman.setNextRequest(null);\r",
+                      "   console.log('id is absent');\r",
+                      "} else {\r",
+                      "let saveTags = findById[0].tags[0].name\r",
+                      "pm.environment.set(\"tag\", saveTags);\r",
+                      "console.log(findById);\r",
+                      "console.log('TagName' + ' ' + saveTags);\r",
+                      "};\r",
+                      "\r",
+                      "console.log('Object is absent'+'-'+checkEmpty);\r",
+                      "\r",
+                      "\r",
+                      "*/\r",
+                      "var data = pm.response.json();\r",
+                      "\r",
+                      "var count = Object.keys(data).length;\r",
+                      "\r",
+                      "console.log(\"The number of objects in the response body is: \" + count);\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByStatus?status=sold",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "sold",
+                      "description": "(Required) Status values that need to be considered for filter"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available",
+                      "description": "(Required) Status values that need to be considered for filter",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "pending",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Multiple status values can be provided with comma separated strings"
+              },
+              "response": [
+                {
+                  "name": "successful operation",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByStatus"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "available"
+                        },
+                        {
+                          "key": "status",
+                          "value": "available"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"cupidatat ullamco proident et\",\n      \"aliquip do\"\n    ],\n    \"id\": -62687812,\n    \"category\": {\n      \"id\": -92014420,\n      \"name\": \"amet elit aliquip\"\n    },\n    \"tags\": [\n      {\n        \"id\": 92444041,\n        \"name\": \"eiusmod\"\n      },\n      {\n        \"id\": 41805805,\n        \"name\": \"cillum eiusmod pariatur sit\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"non voluptate\",\n      \"ipsum ut amet\"\n    ],\n    \"id\": -56009820,\n    \"category\": {\n      \"id\": -65004502,\n      \"name\": \"ipsum sed lab\"\n    },\n    \"tags\": [\n      {\n        \"id\": -15277855,\n        \"name\": \"nostrud veniam culpa voluptate\"\n      },\n      {\n        \"id\": -14891562,\n        \"name\": \"mollit tempor deserunt in ullamco\"\n      }\n    ],\n    \"status\": \"pending\"\n  }\n]"
+                },
+                {
+                  "name": "Invalid status value",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByStatus"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "available"
+                        },
+                        {
+                          "key": "status",
+                          "value": "available"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "Finds Pets by tags",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "/*let jsonData = pm.response.json();\r",
+                      "let checkResponseIsEmpty = (_.isEmpty(jsonData));\r",
+                      "\r",
+                      "pm.test(\"Response is not empty\", function () {        \r",
+                      "    pm.expect(checkResponseIsEmpty).to.be.false\r",
+                      "})\r",
+                      "\r",
+                      "if (checkResponseIsEmpty){\r",
+                      "       postman.setNextRequest(null);\r",
+                      "\r",
+                      "}else{\r",
+                      "\r",
+                      "    pm.test(\"Check name\", function () {\r",
+                      "        pm.expect(jsonData[0].name).to.eql(\"Spunky\");\r",
+                      "    });\r",
+                      "    pm.test(\"Check status\", function () {\r",
+                      "        pm.expect(jsonData[0].status).to.eql(\"sold\");\r",
+                      "    });\r",
+                      "\r",
+                      "    pm.test(\"Body matches 'Rocko's dog'\", function () {\r",
+                      "        pm.expect(jsonData[0].tags[0].name).to.include(\"Rocko's dog\");\r",
+                      "    });\r",
+                      "}*/\r",
+                      "\r",
+                      "var data = pm.response.json();\r",
+                      "\r",
+                      "var count = Object.keys(data).length;\r",
+                      "\r",
+                      "console.log(\"The number of objects in the response body is: \" + count);\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByTags?tags={{tag}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByTags"
+                  ],
+                  "query": [
+                    {
+                      "key": "tags",
+                      "value": "{{tag}}",
+                      "description": "(Required) Tags to filter by"
+                    }
+                  ]
+                },
+                "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
+              },
+              "response": [
+                {
+                  "name": "successful operation",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByTags?tags=nulla tempor dolore eu aliqua&tags=occaecat do ",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByTags"
+                      ],
+                      "query": [
+                        {
+                          "key": "tags",
+                          "value": "nulla tempor dolore eu aliqua"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "occaecat do "
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"cupidatat ullamco proident et\",\n      \"aliquip do\"\n    ],\n    \"id\": -62687812,\n    \"category\": {\n      \"id\": -92014420,\n      \"name\": \"amet elit aliquip\"\n    },\n    \"tags\": [\n      {\n        \"id\": 92444041,\n        \"name\": \"eiusmod\"\n      },\n      {\n        \"id\": 41805805,\n        \"name\": \"cillum eiusmod pariatur sit\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"non voluptate\",\n      \"ipsum ut amet\"\n    ],\n    \"id\": -56009820,\n    \"category\": {\n      \"id\": -65004502,\n      \"name\": \"ipsum sed lab\"\n    },\n    \"tags\": [\n      {\n        \"id\": -15277855,\n        \"name\": \"nostrud veniam culpa voluptate\"\n      },\n      {\n        \"id\": -14891562,\n        \"name\": \"mollit tempor deserunt in ullamco\"\n      }\n    ],\n    \"status\": \"pending\"\n  }\n]"
+                },
+                {
+                  "name": "Invalid tag value",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByTags?tags=nulla tempor dolore eu aliqua&tags=occaecat do ",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByTags"
+                      ],
+                      "query": [
+                        {
+                          "key": "tags",
+                          "value": "nulla tempor dolore eu aliqua"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "occaecat do "
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "Find pet by id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "let jsonData = pm.response.json();",
+                      "let checkResponseIsEmpty = (_.isEmpty(jsonData));",
+                      "",
+                      "pm.test(\"Response is not empty\", function () {        ",
+                      "    pm.expect(checkResponseIsEmpty).to.be.false",
+                      "})",
+                      "",
+                      "if (checkResponseIsEmpty){",
+                      "       postman.setNextRequest(null);",
+                      "",
+                      "}else{",
+                      "",
+                      "    pm.test(\"Check name\", function () {",
+                      "        pm.expect(jsonData.name).to.eql(\"Spunky\");",
+                      "    });",
+                      "    pm.test(\"Check status\", function () {",
+                      "        pm.expect(jsonData.status).to.eql(\"sold\");",
+                      "    });",
+                      "",
+                      "    pm.test(\"Body matches 'Rocko's dog'\", function () {",
+                      "        pm.expect(jsonData.tags[0].name).to.include(\"Rocko's dog\");",
+                      "    });",
+                      "}",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/xml, application/json",
+                    "disabled": true
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/:petId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "{{petId}}"
+                    }
+                  ]
+                },
+                "description": "Returns a single pet"
+              },
+              "response": []
+            },
+            {
+              "name": "Finds Pets by status and Compare Category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "let jsonData = pm.response.json();\r",
+                      "//Find value in object\r",
+                      "let findCategoryId = jsonData.filter(x => x.id === pm.environment.get(\"petId\")).map(x => x.category.id);\r",
+                      "//Compare values\r",
+                      "pm.test(\"Category Id=10\", function () {\r",
+                      "    pm.expect(findCategoryId).to.contain(10);\r",
+                      "});\r",
+                      "\r",
+                      "console.log(findCategoryId)"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByStatus?status=sold",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "sold",
+                      "description": "(Required) Status values that need to be considered for filter"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available",
+                      "description": "(Required) Status values that need to be considered for filter",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "pending",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Multiple status values can be provided with comma separated strings"
+              },
+              "response": [
+                {
+                  "name": "successful operation",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByStatus"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "available"
+                        },
+                        {
+                          "key": "status",
+                          "value": "available"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"cupidatat ullamco proident et\",\n      \"aliquip do\"\n    ],\n    \"id\": -62687812,\n    \"category\": {\n      \"id\": -92014420,\n      \"name\": \"amet elit aliquip\"\n    },\n    \"tags\": [\n      {\n        \"id\": 92444041,\n        \"name\": \"eiusmod\"\n      },\n      {\n        \"id\": 41805805,\n        \"name\": \"cillum eiusmod pariatur sit\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"non voluptate\",\n      \"ipsum ut amet\"\n    ],\n    \"id\": -56009820,\n    \"category\": {\n      \"id\": -65004502,\n      \"name\": \"ipsum sed lab\"\n    },\n    \"tags\": [\n      {\n        \"id\": -15277855,\n        \"name\": \"nostrud veniam culpa voluptate\"\n      },\n      {\n        \"id\": -14891562,\n        \"name\": \"mollit tempor deserunt in ullamco\"\n      }\n    ],\n    \"status\": \"pending\"\n  }\n]"
+                },
+                {
+                  "name": "Invalid status value",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByStatus"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "available"
+                        },
+                        {
+                          "key": "status",
+                          "value": "available"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Example 2",
+          "item": [
+            {
+              "name": "Add a new pet to the store",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Spunky\",\n    \"photoUrls\": [],\n    \"id\": 1,\n    \"category\": {\n        \"id\": 10,\n        \"name\": \"Miniature Bull Terrier\"\n    },\n    \"tags\": [\n        {\n            \"id\": 89,\n            \"name\": \"Spunky is Rocko's dog\"\n        },\n        {\n            \"id\": 90,\n            \"name\": \"The Nickelodeon cartoon series Rocko's Modern Life\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pet",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Invalid input",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet"
+                      ]
+                    }
+                  },
+                  "status": "Method Not Allowed",
+                  "code": 405,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "Finds Pets by status",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "let jsonData = pm.response.json();\r",
+                      "let findById = jsonData.filter(x => x.id === 4545454545454575)\r",
+                      "let checkEmpty = (_.isEmpty(findById));\r",
+                      "\r",
+                      "\r",
+                      "\r",
+                      "if \t(checkEmpty){\r",
+                      "   postman.setNextRequest(null);\r",
+                      "} else {\r",
+                      "let saveTags = findById[0].tags[0].name\r",
+                      "pm.environment.set(\"tag\", saveTags);\r",
+                      "console.log(findById);\r",
+                      "console.log('TagName' + ' ' + saveTags);\r",
+                      "};\r",
+                      "\r",
+                      "\r",
+                      "\r",
+                      "console.log('Object is absent'+'-'+checkEmpty);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByStatus?status=sold",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "sold",
+                      "description": "(Required) Status values that need to be considered for filter"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available",
+                      "description": "(Required) Status values that need to be considered for filter",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "pending",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Multiple status values can be provided with comma separated strings"
+              },
+              "response": [
+                {
+                  "name": "successful operation",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByStatus"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "available"
+                        },
+                        {
+                          "key": "status",
+                          "value": "available"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"cupidatat ullamco proident et\",\n      \"aliquip do\"\n    ],\n    \"id\": -62687812,\n    \"category\": {\n      \"id\": -92014420,\n      \"name\": \"amet elit aliquip\"\n    },\n    \"tags\": [\n      {\n        \"id\": 92444041,\n        \"name\": \"eiusmod\"\n      },\n      {\n        \"id\": 41805805,\n        \"name\": \"cillum eiusmod pariatur sit\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"non voluptate\",\n      \"ipsum ut amet\"\n    ],\n    \"id\": -56009820,\n    \"category\": {\n      \"id\": -65004502,\n      \"name\": \"ipsum sed lab\"\n    },\n    \"tags\": [\n      {\n        \"id\": -15277855,\n        \"name\": \"nostrud veniam culpa voluptate\"\n      },\n      {\n        \"id\": -14891562,\n        \"name\": \"mollit tempor deserunt in ullamco\"\n      }\n    ],\n    \"status\": \"pending\"\n  }\n]"
+                },
+                {
+                  "name": "Invalid status value",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByStatus"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "available"
+                        },
+                        {
+                          "key": "status",
+                          "value": "available"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "Finds Pets by tags",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "let jsonData = pm.response.json();\r",
+                      "let checkResponseIsEmpty = (_.isEmpty(jsonData));\r",
+                      "\r",
+                      "pm.test(\"Response is not empty\", function () {        \r",
+                      "    pm.expect(checkResponseIsEmpty).to.be.false\r",
+                      "})\r",
+                      "\r",
+                      "if (checkResponseIsEmpty){\r",
+                      "       postman.setNextRequest(null);\r",
+                      "\r",
+                      "}else{\r",
+                      "\r",
+                      "    pm.test(\"Check name\", function () {\r",
+                      "        pm.expect(jsonData[0].name).to.eql(\"Spunky\");\r",
+                      "    });\r",
+                      "    pm.test(\"Check status\", function () {\r",
+                      "        pm.expect(jsonData[0].status).to.eql(\"sold\");\r",
+                      "    });\r",
+                      "\r",
+                      "    pm.test(\"Body matches 'Rocko's dog'\", function () {\r",
+                      "        pm.expect(jsonData[0].tags[0].name).to.include(\"Rocko's dog\");\r",
+                      "    });\r",
+                      "}\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "oauth2"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByTags?tags={{tag}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByTags"
+                  ],
+                  "query": [
+                    {
+                      "key": "tags",
+                      "value": "{{tag}}",
+                      "description": "(Required) Tags to filter by"
+                    }
+                  ]
+                },
+                "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
+              },
+              "response": [
+                {
+                  "name": "successful operation",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByTags?tags=nulla tempor dolore eu aliqua&tags=occaecat do ",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByTags"
+                      ],
+                      "query": [
+                        {
+                          "key": "tags",
+                          "value": "nulla tempor dolore eu aliqua"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "occaecat do "
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"cupidatat ullamco proident et\",\n      \"aliquip do\"\n    ],\n    \"id\": -62687812,\n    \"category\": {\n      \"id\": -92014420,\n      \"name\": \"amet elit aliquip\"\n    },\n    \"tags\": [\n      {\n        \"id\": 92444041,\n        \"name\": \"eiusmod\"\n      },\n      {\n        \"id\": 41805805,\n        \"name\": \"cillum eiusmod pariatur sit\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"non voluptate\",\n      \"ipsum ut amet\"\n    ],\n    \"id\": -56009820,\n    \"category\": {\n      \"id\": -65004502,\n      \"name\": \"ipsum sed lab\"\n    },\n    \"tags\": [\n      {\n        \"id\": -15277855,\n        \"name\": \"nostrud veniam culpa voluptate\"\n      },\n      {\n        \"id\": -14891562,\n        \"name\": \"mollit tempor deserunt in ullamco\"\n      }\n    ],\n    \"status\": \"pending\"\n  }\n]"
+                },
+                {
+                  "name": "Invalid tag value",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: oauth2",
+                        "key": "Authorization",
+                        "value": "<token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/pet/findByTags?tags=nulla tempor dolore eu aliqua&tags=occaecat do ",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "pet",
+                        "findByTags"
+                      ],
+                      "query": [
+                        {
+                          "key": "tags",
+                          "value": "nulla tempor dolore eu aliqua"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "occaecat do "
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Example 3",
+      "item": [
+        {
+          "name": "Add a new pet to the store from file",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.environment.set(\"petId\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "oauth2"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{petNameFromFile}}\",\n    \"photoUrls\": [],\n    \"id\": {{petIdFromFile}},\n    \"category\": {\n        \"id\": {{$randomInt}},\n        \"name\": \"{{$randomNoun}}\"\n    },\n    \"tags\": [\n        {\n            \"id\": {{$randomInt}},\n            \"name\": \"{{$randomAdjective}}\"\n        },\n        {\n            \"id\": {{$randomInt}},\n            \"name\": \"{{$randomAdjective}}\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Invalid input",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: oauth2",
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet"
+                  ]
+                }
+              },
+              "status": "Method Not Allowed",
+              "code": 405,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Add value from response to test name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "//Send data to test name\r",
+                  "let name = pm.response.json().name;\r",
+                  "pm.test(`Status code is 200; Name: ${name}`, function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "oauth2"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{$randomFullName}}\",\n    \"photoUrls\": [],\n    \"id\": {{$randomInt}},\n    \"category\": {\n        \"id\": {{$randomInt}},\n        \"name\": \"{{$randomNoun}}\"\n    },\n    \"tags\": [\n        {\n            \"id\": {{$randomInt}},\n            \"name\": \"{{$randomAdjective}}\"\n        },\n        {\n            \"id\": {{$randomInt}},\n            \"name\": \"{{$randomAdjective}}\"\n        }\n    ],\n    \"status\": \"sold\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Finds Pets by status and Visualise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "let template = `\r",
+                  "    <style type=\"text/css\">\r",
+                  "        .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+                  "        .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+                  "        .tftable tr {background-color:#ffffff;}\r",
+                  "        .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+                  "        .tftable tr:hover {background-color:#e0ffff;}\r",
+                  "    </style>\r",
+                  "    \r",
+                  "    <table class=\"tftable\" border=\"1\">\r",
+                  "        <tr>\r",
+                  "            <th>Id</th>\r",
+                  "            <th>Status</th>\r",
+                  "            <th>Category Id</th>\r",
+                  "            <th>Category Name</th>\r",
+                  "        </tr>\r",
+                  "        \r",
+                  "        {{#each response}}\r",
+                  "            <tr id=row_{{@key}} onClick=\"handleClick(this.id)\">\r",
+                  "                <td id={{@key}}>{{id}}</td>\r",
+                  "                <td>{{status}}</td>\r",
+                  "                <td>{{category.id}}</td>\r",
+                  "                <td>{{category.name}}</td>\r",
+                  "            </tr>\r",
+                  "        {{/each}}\r",
+                  "    </table>\r",
+                  "`;\r",
+                  "\r",
+                  "pm.visualizer.set(template, {\r",
+                  "    response: JSON.parse(responseBody)\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "oauth2"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=sold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet",
+                "findByStatus"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "sold",
+                  "description": "(Required) Status values that need to be considered for filter"
+                },
+                {
+                  "key": "status",
+                  "value": "available",
+                  "description": "(Required) Status values that need to be considered for filter",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Multiple status values can be provided with comma separated strings"
+          },
+          "response": [
+            {
+              "name": "successful operation",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: oauth2",
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "available"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"cupidatat ullamco proident et\",\n      \"aliquip do\"\n    ],\n    \"id\": -62687812,\n    \"category\": {\n      \"id\": -92014420,\n      \"name\": \"amet elit aliquip\"\n    },\n    \"tags\": [\n      {\n        \"id\": 92444041,\n        \"name\": \"eiusmod\"\n      },\n      {\n        \"id\": 41805805,\n        \"name\": \"cillum eiusmod pariatur sit\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  {\n    \"name\": \"doggie\",\n    \"photoUrls\": [\n      \"non voluptate\",\n      \"ipsum ut amet\"\n    ],\n    \"id\": -56009820,\n    \"category\": {\n      \"id\": -65004502,\n      \"name\": \"ipsum sed lab\"\n    },\n    \"tags\": [\n      {\n        \"id\": -15277855,\n        \"name\": \"nostrud veniam culpa voluptate\"\n      },\n      {\n        \"id\": -14891562,\n        \"name\": \"mollit tempor deserunt in ullamco\"\n      }\n    ],\n    \"status\": \"pending\"\n  }\n]"
+            },
+            {
+              "name": "Invalid status value",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: oauth2",
+                    "key": "Authorization",
+                    "value": "<token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/pet/findByStatus?status=available&status=available",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "available"
+                    },
+                    {
+                      "key": "status",
+                      "value": "available"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "idCollection",
+      "value": "234",
+      "type": "string",
+      "disabled": true
+    }
+  ]
+}
